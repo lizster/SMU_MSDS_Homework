@@ -1,0 +1,42 @@
+---
+title: "Assignment 4"
+author: "Lizzy Sterling"
+date: "9/21/2017"
+output: html_document
+---
+
+#Question 1: FiveThirtyEight Data
+Install fivethirtyeight package
+Assign the 18th data set(college_recent_grads) to an object 'df'
+Detailed list of the data sets to get URL of df
+Find the dimension and column names of df
+
+```{r, echo=TRUE}
+#install fivethirtyeight package
+#install.packages("fivethirtyeight")
+library(fivethirtyeight)
+df <- college_recent_grads
+#vignette("fivethirtyeight", package="fivethirtyeight") #http://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/
+dim(df) #Dimensions of df
+colnames(df) #column names of df
+```
+
+#Question 2: Data Summary
+```{r, echo=TRUE}
+#Getting column names and countint the columns
+colnames(df)
+ncol(df)
+#unique values in major_category
+major_count <- table(df$major_category)
+#barplot of major_count
+par(las=2)
+barplot(major_count, horiz=TRUE, col="red", main="Count of Major Categories", xlab="Majors", ylab="Count") #Fix y-axis
+
+#Writing a CSV
+write.csv(df, file="fivethirtyeight.csv", row.names=FALSE)
+```
+
+#Question 3: Codebook
+```{r, echo=TRUE}
+#https://github.com/lizster/SMU_MSDS_Homework/tree/master
+```

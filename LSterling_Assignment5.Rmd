@@ -1,0 +1,67 @@
+---
+title: "Assignment 5"
+author: "Lizzy Sterling"
+date: "9/28/2017"
+output: html_document
+---
+#Codebook for Homework 5
+In this assignment, we were given two datasets that were both in text files. They consisted of information regarding the most popular names in both 2015 and 2016. Our client was expecting a baby soon and wanted help in figuring out recently popular names.
+
+##Variables
+"df" : The original data set "y2016.txt" containing information about popular children's names in 2016
+"y2016" : The tidy version of df (renamed columns and removed redundant data)
+"y2015" : The original data set "y2015.txt" containing information about popular children's names in 2015 (split into 3 columns with human readable names)
+"final" : The merged data set of "y2016" and "y2015". Also cleaned to get rid of any absent data (NAs). Later, "Total" was added as a column and the two separate "number of children" columns were removed
+"Total" : Adding an additional column into "final" that combines the number of children from both 2015 and 2016
+"girl" : Gives the top 10 girls names from both years to give to the client, who is having a girl. Created by removing all rows that contain Male("M") data and then removing the Gender column altogether (since they are now all female). It was then assigned to just the ten top values of the ordered data
+
+
+#Question 1: Data Munging
+```{r, echo=TRUE}
+setwd("/Users/lizzysterling/Desktop/DDS_5")
+#install.packages("reshape2")
+library(reshape2)
+df <- read.table("yob2016.txt", sep=",", header=FALSE, col.names=("Info")) #changes the one column name to "Info" to help split columns later
+df <- colsplit(df$Info, ";", names=c("Names", "Gender", "Number of Children")) #splitting the data into 3 rows and making the headers human readable
+
+summary(df) #summary of the new dataframe
+str(df) #structure of the new dataframe
+
+df[(grep("yyy$", df$Names)),] #gives the row with this particular mistake
+y2016 <- df[-212,] #getting rid of the redundant row
+```
+
+#Question 2: Data Merging
+```{r, echo=TRUE}
+setwd("/Users/lizzysterling/Desktop/DDS_5")
+y2015 <- read.table("yob2015.txt", sep=",", header=FALSE, col.names=c("Names", "Gender", "Number of Children")) #Goes ahead and names the three columns since they are separated by commas
+names(y2015)[3] <- "Number of Children" #for some reason it was separating each word with a .
+tail(y2015, 10) #gives the ten least popular names from 2015
+```
+It is interesting that these last 10 names are all Males and that exactly 5 children have been named each name
+```{r, echo=TRUE}
+final <- merge(y2016, y2015, union("Names", "Gender"), all=TRUE) #merges all of the data from each, merging the "Names" and "Gender" columns
+final <- final[(complete.cases(final)),] #gets rid of any NAs in the data
+```
+
+#Question 3: Data Summary
+```{r, echo=TRUE}
+Total <- (final$`Number of Children.x`+final$`Number of Children.y`) #creates a new column containing the sum of the number of children for each year
+sum(Total) #gives the total number of children given popular names in both years
+```
+There are 7239213 children given popular names in 2015 and 2016.
+
+```{r, echo=TRUE}
+final <- cbind(final,Total) #adding "Total" to "final"
+final <- final[,c(1,2,5)] #final now only contains the "Name", "Gender", and "Total" columns
+head((final[order(-final$Total),]),10) #gives the top ten names
+```
+The 10 most popular names were Emma, Olivia, Noah, Liam, Sophia, Ava, Mason, William, Jacob, and Isabella.
+```{r, echo=TRUE}
+girl <- final[-grep("[Mm]", final$Gender),] #getting rid of all male names, including all of their corresponing data
+girl <- girl[order(-girl$Total),] #orders the data from largest to smallest Total
+girl <- head(girl,10) #gives the top 10 most popular girls name
+girl <- girl[,c(1,3)] #gets rid of the Gender row, which is now redundant since they are all female
+girl #shows the ten most popular girls names
+write.csv(girl, "itsagirl.csv", row.names=FALSE) #saved to a csv
+```

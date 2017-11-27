@@ -1,0 +1,67 @@
+---
+title: "Assignment 3"
+author: "Lizzy Sterling"
+date: "9/20/2017"
+output: html_document
+---
+#1. GitHub Cloning
+Setting Current Directory
+```{r, echo=TRUE}
+#cd /Users/LizzySterling/Documents/GitHub/
+```
+
+Creating New Directory
+```{r, echo = TRUE}
+#mkdir public-datasets
+```
+
+Cloning Repository
+```{r, echo = TRUE}
+#git clone https://github.com/caesar0301/awesome-public-datasets
+```
+
+#2. Data Summary
+
+df: object referencing the datafile "titanic.csv"
+```{r, echo=TRUE}
+setwd("/Users/lizzysterling/Documents/GitHub/awesome-public-datasets/Datasets")
+df <- read.csv("titanic.csv")
+```
+
+Count of males and females with corresponding plot
+```{r, echo=TRUE}
+#number of females
+cat("Females:", nrow(df[df$Sex == "female", ]))
+#number of males
+cat(" Males:", nrow(df[df$Sex == "male", ]))
+
+#plotting the differences
+plot(x=df$Sex, y=df$Sex, xlab = "Females", ylab = "Males",main = "Frequency of Females and Males")
+```
+
+Applying the mean to Age, Fare, and Survival
+```{r, echo=TRUE}
+#Geting Rid of any missing values
+age <- na.omit(df[6])
+sapply(age, mean) #mean ages
+sapply(df[2], mean) #mean fares
+sapply(df[10], mean) #mean survival
+```
+
+#3. Function Building
+```{r, echo=TRUE}
+setwd("/Users/lizzysterling/Desktop/")
+df2 <- read.csv("sleep_data_01.csv")
+df2 <- na.omit(df2)
+sleep <- function(x){
+  medage <- median(x$Age) #median age
+  mindur <- min(x$Duration) #minimum duration of sleep
+  maxdur <- max(x$Duration) #maximum duration of sleep
+  meanRos <- mean(x$RSES)
+  stdRos <- sd(x$RSES)
+  report <- data.frame(medage/5, meanRos/5, stdRos/5, (maxdur-mindur))
+  colnames(report)<- c("MedianAge","SelfEsteem","SE_SD","DurationRange")
+  round(report,digits=2)
+}
+sleep(df2)
+```
